@@ -114,8 +114,9 @@ class Service(models.Model):
         session = Session()
 
         host = self.host if self.host[-1] != '/' else self.host[:-1]
+        api_endpoint = api if api[0] != '/' else api[1:]
 
-        url = '{host}/{api_endpoint}'.format(host=host, api_endpoint=api)
+        url = '{host}/{api_endpoint}'.format(host=host, api_endpoint=api_endpoint)
         request = Request(method=method.upper(), url=url, data=data, **request_kw)
         prepared_request = session.prepare_request(request)
 

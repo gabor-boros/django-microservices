@@ -69,6 +69,45 @@ SERVICE_CONFIGURATION_FILE = 'services.json'
 ]
 ```
 
+## Usage
+After you are done with the installation and configuration, and you loaded your services, you are good to go.
+The usage is very simple. Query your service, and call the `remote_call` object method.
+
+**Remote call example**
+```
+import json
+from microservices.models import Service
+
+def can_login(username, password):
+    authentication_data = json.loads({"username": username: "password": password})
+
+    authentication_service = Service.objects.get(name="auth")
+    response = authentication_service.remote_call(
+        method, api='/login/', data=authentication_data
+    )
+
+    if response.status_code == 200:
+        return True
+
+    return False
+
+```
+
+The package ships with an other object method called `update_availability`. This method can be used to update your service's status.
+To do this you can call it for the object as shown in the example below.
+
+**NOTE**
+If the response code is 400, 404, 500 or 503, the value of `is_available` field will be `False`.
+
+**Update service status**
+```
+from microservices.models import Service
+
+for service in Service.objects.all():
+    service.update_availability()
+
+```
+
 ## Management commands
 Three management command ships with this package to help to manage your service configuration.
 
