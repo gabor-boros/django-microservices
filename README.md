@@ -14,7 +14,7 @@ You can simply install the package with pip from **PyPI** or **GitHub**.
 
 **Install from pypi**
 
-`TO DO`
+`pip install djangomicroservices`
 
 ## Configuration
 Add the `microservices` app to your `INSTALLED_APPS` like this:
