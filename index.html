@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Django-microservices by gabor-boros</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Django-microservices</h1>
+      <h2 class="project-tagline">Simple django package to easily manage your microservices.</h2>
+      <a href="https://github.com/gabor-boros/django-microservices" class="btn">View on GitHub</a>
+      <a href="https://github.com/gabor-boros/django-microservices/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/gabor-boros/django-microservices/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="django-microservices" class="anchor" href="#django-microservices" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>django-microservices</h1>
+
+<h2>
+<a id="about" class="anchor" href="#about" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About</h2>
+
+<p>Simple django package to easily "connect" microservices.</p>
+
+<p>The package loads the service configurations (id, name, host) into a DB table from a json file which can be stored on a shared drive, or hosted on URL.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>You can simply install the package with pip from <strong>PyPI</strong> or <strong>GitHub</strong>.</p>
+
+<p><strong>Install with pip from github</strong></p>
+
+<p><code>pip install git+https://github.com/gabor-boros/django-microservices.git</code></p>
+
+<p><strong>Install from pypi</strong></p>
+
+<p><code>pip install djangomicroservices</code></p>
+
+<h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>Add the <code>microservices</code> app to your <code>INSTALLED_APPS</code> like this:</p>
+
+<pre><code>INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'microservices',
+    ...
+]
+</code></pre>
+
+<p>After you added it to the <code>INSTALLED_APPS</code>, you <strong>must</strong> configure the path where your service configuration exists.
+The configuration file is a <code>json</code> file. Basically it is an output of <code>python manage.py dumpdata</code> command.
+It doesn't matter where is your file located. It can be hosted on a website, or located on a <em>shared</em> drive.</p>
+
+<pre><code>SERVICE_CONFIGURATION_FILE = 'http://myserver.com/services.json'
+</code></pre>
+
+<p>or</p>
+
+<pre><code>SERVICE_CONFIGURATION_FILE = 'services.json'
+</code></pre>
+
+<p><strong>Service configuration example</strong>
+<em>sample.json</em></p>
+
+<pre><code>[
+    {
+        "model": "microservices.service",
+        "pk": 1,
+        "fields": {
+            "name": "auth",
+            "host": "http://auth.example.com/",
+        }
+    },
+    {
+        "model": "microservices.service",
+        "pk": 2,
+        "fields": {
+            "name": "search",
+            "host": "http://search.example.com/",
+        }
+    }
+]
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>After you are done with the installation and configuration, and you loaded your services, you are good to go.
+The usage is very simple. Query your service, and call the <code>remote_call</code> object method.</p>
+
+<p><strong>Remote call example</strong></p>
+
+<pre><code>import json
+from microservices.models import Service
+
+def can_login(username, password):
+    authentication_data = json.loads({"username": username: "password": password})
+
+    authentication_service = Service.objects.get(name="auth")
+    response = authentication_service.remote_call(
+        method, api='/login/', data=authentication_data
+    )
+
+    if response.status_code == 200:
+        return True
+
+    return False
+
+</code></pre>
+
+<p>The package ships with an other object method called <code>update_availability</code>. This method can be used to update your service's status.
+To do this you can call it for the object as shown in the example below.</p>
+
+<p><strong>NOTE</strong>
+If the response code is 400, 404, 500 or 503, the value of <code>is_available</code> field will be <code>False</code>.</p>
+
+<p><strong>Update service status</strong></p>
+
+<pre><code>from microservices.models import Service
+
+for service in Service.objects.all():
+    service.update_availability()
+
+</code></pre>
+
+<h2>
+<a id="management-commands" class="anchor" href="#management-commands" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Management commands</h2>
+
+<p>Three management command ships with this package to help to manage your service configuration.</p>
+
+<ul>
+<li>
+<code>list_services</code> - Lists your services ordered by their status</li>
+<li>
+<code>load_services</code> - Loads the configuration from the given resource location, set in <code>settings.py</code>
+</li>
+<li>
+<code>check_services</code> - Going thorough your configuration and tries to reach them.
+
+<ul>
+<li>If the host sends any response (which is not error related), the service will be marked available</li>
+<li>If the response is an error, or the service can not be reached, the service's status will be unavailable</li>
+</ul>
+</li>
+</ul>
+
+<h2>
+<a id="tests" class="anchor" href="#tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tests</h2>
+
+<p>To run the tests for this package use the <code>python manage.py test</code> command as usual
+In case you would like to generate a <strong>coverage</strong> report as well, run the <code>run_test_coverage.sh</code> file.</p>
+
+<h2>
+<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributors</h2>
+
+<p>If you would like to help to develop this package please read the CONTRIBUTING guideline. Every PR is highly welcomed.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/gabor-boros/django-microservices">Django-microservices</a> is maintained by <a href="https://github.com/gabor-boros">gabor-boros</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
