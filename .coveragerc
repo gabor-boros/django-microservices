@@ -1,0 +1,23 @@
+[run]
+source = microservices
+branch = True
+omit =
+    microservices/app_settings.py
+    microservices/*/__init__.py
+    microservices/apps.py
+    microservices/admin.py
+    microservices/tests.py
+    microservices/migrations/*
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    pragma: no cover
+
+    raise AssertionError
+    raise NotImplementedError
+
+    if 0:
+    if __name__ == .__main__.:
+
+ignore_errors = True
