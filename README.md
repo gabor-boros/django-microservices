@@ -9,9 +9,11 @@ The package loads the service configurations (id, name, host) into a DB table fr
 You can simply install the package with pip from **PyPI** or **GitHub**.
 
 **Install with pip from github**
-`pip install -e git+https://github.com/gabor-boros/django-microservices.git`
+
+`pip install git+https://github.com/gabor-boros/django-microservices.git`
 
 **Install from pypi**
+
 `TO DO`
 
 ## Configuration
