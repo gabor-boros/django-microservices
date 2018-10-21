@@ -16,4 +16,4 @@ def refresh_service_configuration_data(configuration_file):
         f.write(configuration)
         f.close()
 
-    call_command('loaddata', configuration_file)
+    call_command('loaddata', os.path.abspath(configuration_file))

@@ -18,6 +18,7 @@
 .hypothesis/
 .idea/
 .installed.cfg
+.DS_Store
 .ipynb_checkpoints
 .python-version
 .ropeproject

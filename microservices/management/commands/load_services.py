@@ -8,14 +8,13 @@ class Command(BaseCommand):
     help = 'Load configuration of the services'
 
     def handle(self, *args, **options):
+        self.stdout.write('Loading service configuration from {location}'.format(
+            location=str(SERVICE_CONFIGURATION_FILE))
+        )
+
         try:
-            self.stdout.write('Loading service configuration from {location}'.format(
-                location=str(SERVICE_CONFIGURATION_FILE))
-            )
-
             refresh_service_configuration_data(SERVICE_CONFIGURATION_FILE)
-
             self.stdout.write(self.style.SUCCESS('Configuration loaded successfully'))
 
-        except Exception:
-            self.stderr.write(self.style.ERROR('Configuration can not be loaded'))
+        except Exception as exc:
+            self.stderr.write(self.style.ERROR('Configuration can not be loaded.\n{exc}'.format(exc=exc)))

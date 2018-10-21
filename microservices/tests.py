@@ -1,4 +1,6 @@
 import json
+import os
+
 import mock
 import tempfile
 import requests_mock
@@ -99,6 +101,10 @@ class HelpersTestCase(TestCase):
 
     def test_get_config_from_file(self):
         file_path = self.temp_file(json.dumps(self.configuration))
+        refresh_service_configuration_data(file_path)
+
+    def test_get_config_from_relative_path(self):
+        file_path = os.path.relpath(self.temp_file(json.dumps(self.configuration)))
         refresh_service_configuration_data(file_path)
 
 
