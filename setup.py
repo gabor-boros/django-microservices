@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="djangomicroservices",
-    version="0.1.1",
+    version="0.1.2",
     author="Gabor Boros",
     author_email="gabor.brs@gmail.com",
     license='MIT',
