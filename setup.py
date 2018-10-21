@@ -21,7 +21,7 @@ setup(
         'microservices.migrations'
     ],
     classifiers=[
-        "Programming Language :: Python"
+        "Programming Language :: Python",
         "Framework :: Django",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
